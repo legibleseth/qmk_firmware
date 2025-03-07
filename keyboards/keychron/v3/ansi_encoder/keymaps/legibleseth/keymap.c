@@ -31,7 +31,9 @@ enum my_keycodes {
     // apple toggle focus mode
     AP_DND,
     // apple spotlight
-    AP_SPOT
+    AP_SPOT,
+    // screenshot
+    SS_SCR
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -41,8 +43,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             return false;
         case AP_DND:
             host_system_send(record->event.pressed ? 0x009b : 0);
+            return false;
         case AP_SPOT:
             host_consumer_send(record->event.pressed ? 0x0221 : 0);
+            return false;
+        case SS_SCR:
+            SEND_STRING(SS_LCTL(SS_LSFT(SS_LCMD("4"))));
+            return false;
     }
 
     return true;
@@ -53,15 +60,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [MAC_BASE] = LAYOUT_tkl_f13_ansi(
-        KC_ESC,   KC_BRID,  KC_BRIU,  KC_MISSION_CONTROL,    KC_LAUNCHPAD,    RGB_VAD,  RGB_VAI,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,  KC_VOLU,    KC_MUTE,  KC_NO,    AP_DND,    RGB_MOD,
+        KC_ESC,   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,    KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,    KC_MUTE,  SS_SCR,    AP_DND,    RGB_MOD,
         KC_GRV,   KC_1,     KC_2,     KC_3,     KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     KC_MINS,  KC_EQL,     KC_BSPC,  KC_INS,   KC_HOME,  KC_PGUP,
         KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,    KC_BSLS,  KC_DEL,   KC_END,   KC_PGDN,
         KC_CAPS,  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,     KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,              KC_ENT,
         KC_LSFT,            KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,              KC_RSFT,            KC_UP,
-        KC_LCTL,  KC_LOPT,  KC_LCMD,                                KC_SPC,                                 KC_RCMD,  KC_ROPT,  AP_GLOB, KC_RCTL,  KC_LEFT,  KC_DOWN,  KC_RGHT),
+        KC_LCTL,  KC_LCMD,  KC_LOPT,                                KC_SPC,                                 KC_ROPT,  KC_RCMD,  AP_GLOB, KC_RCTL,  KC_LEFT,  KC_DOWN,  KC_RGHT),
 
     [MAC_FN] = LAYOUT_tkl_f13_ansi(
-        _______,  KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,    KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,     RGB_TOG,  _______,  _______,  RGB_TOG,
+        _______,  KC_BRID,  KC_BRIU,  KC_MISSION_CONTROL,    KC_LAUNCHPAD,    RGB_VAD,  RGB_VAI,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,  KC_VOLU,  RGB_TOG,  _______,  _______,  RGB_TOG,
         _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,    _______,  _______,  _______,  _______,
         RGB_TOG,  RGB_MOD,  RGB_VAI,  RGB_HUI,  RGB_SAI,  RGB_SPI,  _______,  _______,  _______,  _______,  _______,  _______,  _______,    _______,  _______,  _______,  _______,
         _______,  RGB_RMOD, RGB_VAD,  RGB_HUD,  RGB_SAD,  RGB_SPD,  _______,  _______,  _______,  _______,  _______,  _______,              _______,
@@ -93,9 +100,3 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
     [WIN_FN]   = { ENCODER_CCW_CW(RGB_VAD, RGB_VAI)},
 };
 #endif // ENCODER_MAP_ENABLE
-
-void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
-if (IS_HOST_LED_ON(USB_LED_CAPS_LOCK)) {
-        RGB_MATRIX_INDICATOR_SET_COLOR(3, R, G, B); //capslock key
-    }
-}
